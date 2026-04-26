@@ -11,8 +11,9 @@
       }
     }
   },
-  "hosting": {
-    "public": "public",
+  "hosting": [{
+    "site": "tera-food",
+    "public": "build/web",
     "ignore": [
       "firebase.json",
       "**/.*",
@@ -24,5 +25,20 @@
         "destination": "/index.html"
       }
     ]
-  }
+  },
+    {
+      "site": "tera-food-doc",
+      "public": "doc/api",
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**"
+      ],
+      "rewrites": [
+        {
+          "source": "**",
+          "destination": "/index.html"
+        }
+      ]}
+  ]
 }

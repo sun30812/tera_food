@@ -36,6 +36,35 @@ jobs:
             firebase.json
             .firebaserc
 
+  make_api_doc:
+    name: Generate API documentation
+    runs-on: ubuntu-latest
+    needs: flutter_build
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Generate API documentation
+        run: dart doc --output doc/api
+
+      - name: Firebase deploy API documentation
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_TERA_FOOD }}
+          projectId: tera-food
+          target: tera-food-doc
+          channelId: live
+
   build_and_preview:
     if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
     runs-on: ubuntu-latest
@@ -52,4 +81,5 @@ jobs:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_TERA_FOOD }}
           projectId: tera-food
+          target: tera-food
           channelId: live
