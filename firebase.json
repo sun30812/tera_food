@@ -1,0 +1,44 @@
+{
+  "flutter": {
+    "platforms": {
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "tera-food",
+          "configurations": {
+            "web": "1:616838622950:web:7e02589c8b5eb6bcb51527"
+          }
+        }
+      }
+    }
+  },
+  "hosting": [{
+    "site": "tera-food",
+    "public": "build/web",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  },
+    {
+      "site": "tera-food-doc",
+      "public": "doc/api",
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**"
+      ],
+      "rewrites": [
+        {
+          "source": "**",
+          "destination": "/index.html"
+        }
+      ]}
+  ]
+}
