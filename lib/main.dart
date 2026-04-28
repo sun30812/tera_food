@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/widget_previews.dart';
 import 'package:tera_food/provider/restaurant_provider.dart';
+import 'package:tera_food/style/buttons.dart';
 import 'package:tera_food/types/food_kind.dart';
 
 /// 앱 전체에서 사용하는 이름.
@@ -305,10 +306,7 @@ class FoodInfoCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 IconButton(onPressed: null, icon: Icon(Icons.delete_outline)),
-                IconButton(
-                  onPressed: null,
-                  icon: Icon(Icons.favorite_border_outlined),
-                ),
+                BeatingHeartIconButton(onPressed: null)
               ],
             ),
           ],

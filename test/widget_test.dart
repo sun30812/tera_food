@@ -49,7 +49,7 @@ void main() {
 
     // 확장 영역의 액션 버튼들이 표시되어야 한다.
     expect(find.byIcon(Icons.delete_outline), findsOneWidget);
-    expect(find.byIcon(Icons.favorite_border_outlined), findsOneWidget);
+    expect(find.byIcon(Icons.favorite_border), findsOneWidget);
   });
 
   /// 추천 버튼을 눌렀을 때 추천 다이얼로그가 표시되는지 검증한다.
