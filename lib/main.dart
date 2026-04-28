@@ -84,7 +84,7 @@ class _AppPageState extends State<AppPage> {
 
     // 기본 음식 종류와 음식점 provider를 초기화한다.
     foodKind = FoodKind.noodle;
-    _restaurantProviderFuture = RestaurantProvider.getInstance();
+    _restaurantProviderFuture = RestaurantProvider.getSampleInstance();
   }
 
   /// [foodList]에서 임의의 음식을 선택해 [RecommendDialog]를 표시한다.

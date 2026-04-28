@@ -1,4 +1,5 @@
 enum FoodKind {
+  all("전체"),
   noodle("면 요리"),
   rice("밥"),
   bread("빵"),
