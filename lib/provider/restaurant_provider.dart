@@ -1,3 +1,4 @@
+import 'package:tera_food/provider/model/food.dart';
 import 'package:tera_food/types/food_kind.dart';
 
 /// 음식점 데이터를 비동기로 제공하는 provider 클래스.
@@ -13,11 +14,14 @@ class RestaurantProvider {
   /// [FoodKind]에 해당하는 음식점 목록을 반환한다.
   ///
   /// 만일 모든 음식 종류를 의마하는 [FoodKind.all]이 전달되면 모든 음식점 목록을 하나의 리스트로 반환한다.
-  List<String> foods(FoodKind foodKind) {
+  List<Food> foods(FoodKind foodKind) {
     if (foodKind == FoodKind.all) {
-      return data?.values.expand((food) => food).toList() ?? [];
+      return data?.entries
+          .expand((entry) =>
+          entry.value.map((food) => Food(foodName: food, foodKind: entry.key)))
+          .toList() ?? [];
     }
-    return data?[foodKind] ?? [];
+    return data?[foodKind]?.map((food) => Food(foodName: food, foodKind: foodKind)).toList() ?? [];
   }
 
   /// 싱글톤 인스턴스가 아직 생성되지 않은 경우, 데이터를 초기화하여 인스턴스를 생성한다.

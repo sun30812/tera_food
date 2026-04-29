@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widget_previews.dart';
+import 'package:tera_food/provider/model/food.dart';
 import 'package:tera_food/provider/restaurant_provider.dart';
 import 'package:tera_food/style/buttons.dart';
 import 'package:tera_food/types/food_kind.dart';
@@ -58,13 +59,13 @@ class _AppPageState extends State<AppPage> {
   late final Future<RestaurantProvider> _restaurantProviderFuture;
 
   /// 마지막으로 추천된 음식 이름.
-  String? recommendedFood;
+  Food? recommendedFood;
 
   /// 음식점 카드 확장 상태를 제어하는 컨트롤러 목록.
   final List<ExpansibleController> _expansionControllers = [];
 
   /// 추천 후보로 사용할 음식 이름 목록.
-  final List<String> _recommendedFoods = [];
+  final List<Food> _recommendedFoods = [];
 
   @override
   void didUpdateWidget(covariant AppPage oldWidget) {
@@ -88,7 +89,7 @@ class _AppPageState extends State<AppPage> {
   }
 
   /// [foodList]에서 임의의 음식을 선택해 [RecommendDialog]를 표시한다.
-  void _recommendFood(List<String> foodList) {
+  void _recommendFood(List<Food> foodList) {
     final random = Random();
     final randomFood = foodList[random.nextInt(foodList.length)];
     recommendedFood = randomFood;
@@ -188,8 +189,7 @@ class _AppPageState extends State<AppPage> {
                     itemCount: foodList.length,
                     itemBuilder: (context, index) {
                       return FoodInfoCard(
-                        foodName: foodList[index],
-                        foodKind: foodKind,
+                        food: foodList[index],
                         controller: _expansionControllers[index],
                       );
                     },
@@ -226,7 +226,7 @@ class RecommendDialog extends StatelessWidget {
   const RecommendDialog({super.key, required this.recommendedFood});
 
   /// 사용자에게 보여줄 추천 음식 이름.
-  final String? recommendedFood;
+  final Food? recommendedFood;
 
   @override
   Widget build(BuildContext context) {
@@ -240,7 +240,7 @@ class RecommendDialog extends StatelessWidget {
             color: Theme.of(context).colorScheme.primary,
           ),
           Text(
-            recommendedFood!,
+            recommendedFood!.foodName,
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
               color: Theme.of(context).colorScheme.primary,
             ),
@@ -265,16 +265,12 @@ class FoodInfoCard extends StatelessWidget {
   /// 음식점 카드 인스턴스를 생성한다.
   const FoodInfoCard({
     super.key,
-    required this.foodName,
-    this.foodKind,
+    required this.food,
     required this.controller,
   });
 
-  /// 카드에 표시할 음식점 이름.
-  final String foodName;
-
-  /// 음식점의 음식 종류.
-  final FoodKind? foodKind;
+  /// 카드에 표시할 음식점 정보
+  final Food food;
 
   /// [ExpansionTile]의 확장 상태를 제어하는 컨트롤러.
   final ExpansibleController controller;
@@ -295,7 +291,7 @@ class FoodInfoCard extends StatelessWidget {
             horizontal: 16.0,
             vertical: 8.0,
           ),
-          title: Text(foodName, style: Theme.of(context).textTheme.bodyLarge),
+          title: Text(food.foodName, style: Theme.of(context).textTheme.bodyLarge),
           leading: Icon(
             getFoodIcon,
             color: Theme.of(context).colorScheme.primary,
@@ -317,7 +313,7 @@ class FoodInfoCard extends StatelessWidget {
 
   /// [foodKind]에 대응하는 Material 아이콘을 반환한다.
   IconData get getFoodIcon {
-    switch (foodKind) {
+    switch (food.foodKind) {
       case FoodKind.noodle:
         return Icons.ramen_dining_rounded;
       case FoodKind.rice:
@@ -336,10 +332,10 @@ class FoodInfoCard extends StatelessWidget {
 
 @Preview(name: 'Food Card')
 Widget foodCardPreview() {
-  return FoodInfoCard(foodName: "쌀국수", controller: ExpansibleController());
+  return FoodInfoCard(food: Food(foodName: "쌀국수", foodKind: FoodKind.noodle), controller: ExpansibleController());
 }
 
 @Preview(name: 'Recommended Dialog')
 Widget recommendedDialogPreview() {
-  return const RecommendDialog(recommendedFood: '쌀국수');
+  return RecommendDialog(recommendedFood: Food(foodName: "쌀국수", foodKind: FoodKind.noodle));
 }
