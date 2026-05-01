@@ -8,7 +8,7 @@ import 'package:tera_food/types/food_preference.dart';
 class Food {
   /// 음식점의 이름.
   final String foodName;
-  /// 음식점의의 주요 음식의 대분류.
+  /// 음식점의 주요 음식의 대분류.
   final FoodKind foodKind;
   /// 음식점에 대한 선호도 정보.
   final FoodPreference preference = FoodPreference.neutral;
