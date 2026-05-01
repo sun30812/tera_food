@@ -15,7 +15,6 @@ void main() {
 
  test('모든 음식점 목록을 정상적으로 가져오는지 테스트', () async {
   RestaurantProvider provider = await RestaurantProvider.getSampleInstance();
-  expect(provider.foods(FoodKind.all).any((element) => element.foodName == 'CU'), true);
   expect(provider.foods(FoodKind.all).any((element) => element.foodName == 'CU'),true);
   expect(provider.foods(FoodKind.all).any((element) => element.foodName == '한솥 도시락'), true);
   expect(provider.foods(FoodKind.all).any((element) => element.foodName == '고스락 칼국수'), true);
