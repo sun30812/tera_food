@@ -7,11 +7,12 @@ import 'package:tera_food/types/food_kind.dart';
 class RestaurantProvider {
   RestaurantProvider._internal(this.data);
 
+  /// [String]으로 작성된 음식점 이름 목록을 [FoodKind]별로 매핑한 데이터.
   final Map<FoodKind, List<String>>? data;
 
   static RestaurantProvider? _instance;
 
-  /// [FoodKind]에 해당하는 음식점 목록을 반환한다.
+  /// [foodKind]에 해당하는 음식점 목록을 [Food] 형으로 반환한다.
   ///
   /// 만일 모든 음식 종류를 의마하는 [FoodKind.all]이 전달되면 모든 음식점 목록을 하나의 리스트로 반환한다.
   List<Food> foods(FoodKind foodKind) {

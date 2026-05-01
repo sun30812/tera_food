@@ -52,19 +52,19 @@ class AppPage extends StatefulWidget {
 ///
 /// 음식 종류 선택, 음식점 목록 및 음식점에 대한 즐겨찾기 및 추천 제외 버튼을 포함한 카드를 표시한다.
 class _AppPageState extends State<AppPage> {
-  /// 현재 선택된 음식 종류.
+  /// 현재 선택된 음식점 종류.
   late FoodKind foodKind;
 
-  /// 음식점 데이터를 비동기로 제공하는 provider future.
+  // 음식점 데이터를 비동기로 제공하는 provider future.
   late final Future<RestaurantProvider> _restaurantProviderFuture;
 
-  /// 마지막으로 추천된 음식 이름.
+  /// 마지막으로 추천된 음식점 정보.
   Food? recommendedFood;
 
-  /// 음식점 카드 확장 상태를 제어하는 컨트롤러 목록.
+  // 음식점 카드 확장 상태를 제어하는 컨트롤러 목록.
   final List<ExpansibleController> _expansionControllers = [];
 
-  /// 추천 후보로 사용할 음식 이름 목록.
+  // 추천 후보로 사용할 음식 이름 목록.
   final List<Food> _recommendedFoods = [];
 
   @override
@@ -207,7 +207,7 @@ class _AppPageState extends State<AppPage> {
     );
   }
 
-  /// 공통 앱바를 생성한다.
+  /// 앱의 전반적인 부분에서 사용될 [AppBar]
   AppBar mainAppBar(BuildContext context) {
     return AppBar(
       title: Text(
@@ -220,12 +220,17 @@ class _AppPageState extends State<AppPage> {
   }
 }
 
-/// 추천 메뉴를 표시하는 다이얼로그.
+/// 추천 음식점을 표시하는 [AlertDialog]
+///
+/// [recommendedFood]의 이름을 표시하며, 확인 버튼을 통해 다이얼로그를 닫는다.
+///
+/// ## 참고
+/// - [Food]
 class RecommendDialog extends StatelessWidget {
   /// [recommendedFood]를 표시하는 다이얼로그를 생성한다.
   const RecommendDialog({super.key, required this.recommendedFood});
 
-  /// 사용자에게 보여줄 추천 음식 이름.
+  /// 사용자에게 보여줄 추천 음식점 정보
   final Food? recommendedFood;
 
   @override
@@ -259,8 +264,7 @@ class RecommendDialog extends StatelessWidget {
 
 /// 음식점 정보를 카드 형태로 표시하는 위젯.
 ///
-/// [foodKind]에 따라 대표 아이콘을 바꾸고,
-/// [controller]로 확장 상태를 외부에서 제어한다.
+/// [food]로 제공된 정보를 출략하며, 카드 확장 상태는 [controller]로 제어된다.
 class FoodInfoCard extends StatelessWidget {
   /// 음식점 카드 인스턴스를 생성한다.
   const FoodInfoCard({
@@ -312,6 +316,9 @@ class FoodInfoCard extends StatelessWidget {
   }
 
   /// [foodKind]에 대응하는 Material 아이콘을 반환한다.
+  ///
+  /// ## 참고
+  /// - [FoodKind]
   IconData get getFoodIcon {
     switch (food.foodKind) {
       case FoodKind.noodle:
