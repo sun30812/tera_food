@@ -6,6 +6,7 @@ import 'package:tera_food/provider/model/food.dart';
 import 'package:tera_food/provider/restaurant_provider.dart';
 import 'package:tera_food/style/buttons.dart';
 import 'package:tera_food/types/food_kind.dart';
+import 'package:tera_food/types/food_preference.dart';
 
 /// 앱 전체에서 사용하는 이름.
 const appName = "테라타워 음식점 추천";
@@ -191,6 +192,7 @@ class _AppPageState extends State<AppPage> {
                       return FoodInfoCard(
                         food: foodList[index],
                         controller: _expansionControllers[index],
+                        provider: asyncSnapshot.data,
                       );
                     },
                   ),
@@ -265,12 +267,14 @@ class RecommendDialog extends StatelessWidget {
 /// 음식점 정보를 카드 형태로 표시하는 위젯.
 ///
 /// [food]로 제공된 정보를 출략하며, 카드 확장 상태는 [controller]로 제어된다.
+/// 음식점 정보에 대해 수정 필요 시 [provider]로 저장소를 직접 전달하여 변경내역을 저장소에 반영할 수 있다.
 class FoodInfoCard extends StatelessWidget {
   /// 음식점 카드 인스턴스를 생성한다.
   const FoodInfoCard({
     super.key,
     required this.food,
     required this.controller,
+    this.provider,
   });
 
   /// 카드에 표시할 음식점 정보
@@ -278,6 +282,11 @@ class FoodInfoCard extends StatelessWidget {
 
   /// [ExpansionTile]의 확장 상태를 제어하는 컨트롤러.
   final ExpansibleController controller;
+
+  /// 음식점에 대한 데이터 저장소에 접근하기 위한 필드.
+  ///
+  /// 음식점에 대한 선호도 변경 시 변경내역을 저장소에 반영하기 위해 사용된다.
+  final RestaurantProvider? provider;
 
   @override
   Widget build(BuildContext context) {
@@ -306,7 +315,9 @@ class FoodInfoCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 IconButton(onPressed: null, icon: Icon(Icons.delete_outline)),
-                BeatingHeartIconButton(onPressed: null)
+                BeatingHeartIconButton(initialActivated: food.preference == FoodPreference.like,onPressed: (isClicked) {
+                  provider?.updatePreference(food: food,preference: isClicked ? FoodPreference.like: FoodPreference.neutral);
+                })
               ],
             ),
           ],
