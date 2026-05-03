@@ -4,13 +4,16 @@ import 'package:flutter/material.dart';
 ///
 /// [initialActivated]가 true로 설정되면 초기 상태가 활성화된 즐겨찾기 버튼으로 시작한다.
 /// [onPressed] 콜백이 제공되면 버튼이 활성화되고, 누를 때마다 애니메이션이 재생된다. 콜백이 null이면 버튼은 비활성화된다.
+/// 버튼 클릭 시 [onPressed] 콜백이 호출되며, 현재 활성화 상태가 전달된다. 활성화 상태는 버튼이 눌릴 때마다 토글된다.
 class BeatingHeartIconButton extends StatefulWidget {
   /// 버튼의 초기 활성화 상태.
   ///
   /// true인 경우 즐겨찾기 상태 활성화, false인 경우 비활성화된 상태로 시작한다. 기본값은 false이다.
   final bool initialActivated;
   /// 버튼이 눌렸을 때 호출되는 콜백 함수.
-  final VoidCallback? onPressed;
+  ///
+  /// 버튼이 눌릴 경우 수행할 동작을 정의할 수 있다. 눌린 경우 즐겨찾기 상태가 활성화 되며, 활성화 여부를 [isEnabled] 변수를 통해 전달한다. 콜백이 null인 경우 버튼은 비활성화된다.
+  final void Function(bool isEnabled)? onPressed;
   const BeatingHeartIconButton({super.key, required this.onPressed, this.initialActivated = false});
 
   @override
@@ -23,7 +26,7 @@ class _BeatingHeartIconButtonState extends State<BeatingHeartIconButton>
   late final AnimationController _controller;
   // 애니메이션 동작을 정의하는 객체
   late final Animation<double> _animation;
-  // 즐겨찾기 버튼에 동작 부여 여부 확인
+  // 즐겨찾기 버튼 눌림 여부 확인
   late bool _isEnabled = widget.initialActivated;
 
   @override
@@ -54,7 +57,7 @@ class _BeatingHeartIconButtonState extends State<BeatingHeartIconButton>
         setState(() {
           _isEnabled = !_isEnabled;
         });
-        widget.onPressed;
+        widget.onPressed!(_isEnabled);
       } : null,
       icon: ScaleTransition(
         scale: _animation,
