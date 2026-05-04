@@ -12,17 +12,29 @@ class RestaurantProvider {
   /// [Food]으로 작성된 음식점 목록을 [FoodKind]별로 매핑한 데이터.
   final Map<FoodKind, List<Food>>? _foodData;
 
-
   static RestaurantProvider? _instance;
 
   /// [foodKind]에 해당하는 음식점 목록을 [Food] 형으로 반환한다.
   ///
   /// 만일 모든 음식 종류를 의마하는 [FoodKind.all]이 전달되면 모든 음식점 목록을 하나의 리스트로 반환한다.
-  List<Food> foods(FoodKind foodKind) {
+  List<Food> foods(FoodKind foodKind, {bool showOnlyFavorite = false}) {
     if (foodKind == FoodKind.all) {
-      return _foodData?.values.expand((foods) => foods).toList() ?? [];
+      return _foodData?.values
+              .expand((foods) => foods)
+              .where(
+                (food) =>
+                    !showOnlyFavorite || food.preference == FoodPreference.like,
+              )
+              .toList() ??
+          [];
     }
-    return _foodData?[foodKind] ?? [];
+    return _foodData?[foodKind]
+            ?.where(
+              (food) =>
+                  !showOnlyFavorite || food.preference == FoodPreference.like,
+            )
+            .toList() ??
+        [];
   }
 
   /// 특정 음식점에 대한 선호도 정보를 업데이트한다.
@@ -32,15 +44,17 @@ class RestaurantProvider {
   /// ## 참고
   /// - [Food]
   /// - [FoodPreference]
-  void updatePreference({required Food food, required FoodPreference preference}) {
+  void updatePreference({
+    required Food food,
+    required FoodPreference preference,
+  }) {
     _foodData?.update(food.foodKind, (oldFoods) {
       List<Food> newFoods = [];
 
       for (final oldFood in oldFoods) {
         if (oldFood.foodName == food.foodName) {
           newFoods.add(oldFood.copyWith(preference: preference));
-        }
-        else {
+        } else {
           newFoods.add(oldFood);
         }
       }
@@ -55,11 +69,31 @@ class RestaurantProvider {
     if (_instance == null) {
       await Future.delayed(const Duration(seconds: 1)); // 예시로 1초 지연
       final internalData = {
-        FoodKind.noodle: [Food(foodName: "고스락 칼국수", foodKind: FoodKind.noodle), Food(foodName: "고기짬뽕", foodKind: FoodKind.noodle), Food(foodName: "찐짜짬뽕", foodKind: FoodKind.noodle), Food(foodName: "큐슈울트라아멘", foodKind: FoodKind.noodle)],
-        FoodKind.rice: [Food(foodName: "진상", foodKind: FoodKind.rice), Food(foodName: "한솥 도시락", foodKind: FoodKind.rice), Food(foodName: "정담은 한상", foodKind: FoodKind.rice)],
-        FoodKind.bread: [Food(foodName: "뉴욕 버거", foodKind: FoodKind.bread), Food(foodName: "목동버거", foodKind: FoodKind.bread), Food(foodName: "베이글 트리", foodKind: FoodKind.bread)],
-        FoodKind.soup: [Food(foodName: "본설렁탕", foodKind: FoodKind.soup), Food(foodName: "양평해장국", foodKind: FoodKind.soup), Food(foodName: "명백집", foodKind: FoodKind.soup)],
-        FoodKind.salad: [Food(foodName: "샐러디", foodKind: FoodKind.salad), Food(foodName: "포케올데이", foodKind: FoodKind.salad)],
+        FoodKind.noodle: [
+          Food(foodName: "고스락 칼국수", foodKind: FoodKind.noodle),
+          Food(foodName: "고기짬뽕", foodKind: FoodKind.noodle),
+          Food(foodName: "찐짜짬뽕", foodKind: FoodKind.noodle),
+          Food(foodName: "큐슈울트라아멘", foodKind: FoodKind.noodle),
+        ],
+        FoodKind.rice: [
+          Food(foodName: "진상", foodKind: FoodKind.rice),
+          Food(foodName: "한솥 도시락", foodKind: FoodKind.rice),
+          Food(foodName: "정담은 한상", foodKind: FoodKind.rice),
+        ],
+        FoodKind.bread: [
+          Food(foodName: "뉴욕 버거", foodKind: FoodKind.bread),
+          Food(foodName: "목동버거", foodKind: FoodKind.bread),
+          Food(foodName: "베이글 트리", foodKind: FoodKind.bread),
+        ],
+        FoodKind.soup: [
+          Food(foodName: "본설렁탕", foodKind: FoodKind.soup),
+          Food(foodName: "양평해장국", foodKind: FoodKind.soup),
+          Food(foodName: "명백집", foodKind: FoodKind.soup),
+        ],
+        FoodKind.salad: [
+          Food(foodName: "샐러디", foodKind: FoodKind.salad),
+          Food(foodName: "포케올데이", foodKind: FoodKind.salad),
+        ],
         FoodKind.etc: [Food(foodName: "CU", foodKind: FoodKind.etc)],
       };
       _instance = RestaurantProvider._internal(internalData);
