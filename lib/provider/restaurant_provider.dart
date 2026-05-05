@@ -71,14 +71,23 @@ class RestaurantProvider {
       final internalData = {
         FoodKind.noodle: [
           Food(foodName: "고스락 칼국수", foodKind: FoodKind.noodle),
-          Food(foodName: "고기짬뽕", foodKind: FoodKind.noodle),
+          Food(foodName: "짬뽕혁명", foodKind: FoodKind.noodle),
           Food(foodName: "찐짜짬뽕", foodKind: FoodKind.noodle),
+          Food(foodName: "퍼틴", foodKind: FoodKind.noodle),
+          Food(foodName: "오한수우육명가", foodKind: FoodKind.noodle),
           Food(foodName: "큐슈울트라아멘", foodKind: FoodKind.noodle),
+          Food(foodName: "오백국수", foodKind: FoodKind.noodle),
         ],
         FoodKind.rice: [
           Food(foodName: "진상", foodKind: FoodKind.rice),
+          Food(foodName: "유쾌한 비빔밥", foodKind: FoodKind.rice),
           Food(foodName: "한솥 도시락", foodKind: FoodKind.rice),
+          Food(foodName: "얌샘김밥", foodKind: FoodKind.rice),
+          Food(foodName: "모모유부", foodKind: FoodKind.rice),
+          Food(foodName: "한창회관", foodKind: FoodKind.rice),
+          Food(foodName: "한끼의 정석 dine", foodKind: FoodKind.rice),
           Food(foodName: "정담은 한상", foodKind: FoodKind.rice),
+          Food(foodName: "장금이한식뷔페", foodKind: FoodKind.rice),
         ],
         FoodKind.bread: [
           Food(foodName: "뉴욕 버거", foodKind: FoodKind.bread),
@@ -87,14 +96,23 @@ class RestaurantProvider {
         ],
         FoodKind.soup: [
           Food(foodName: "본설렁탕", foodKind: FoodKind.soup),
-          Food(foodName: "양평해장국", foodKind: FoodKind.soup),
+          Food(foodName: "일품양평해장국", foodKind: FoodKind.soup),
+          Food(foodName: "육수당", foodKind: FoodKind.soup),
+          Food(foodName: "맑은곰탕", foodKind: FoodKind.soup),
           Food(foodName: "명백집", foodKind: FoodKind.soup),
+          Food(foodName: "북촌손만두", foodKind: FoodKind.soup),
         ],
         FoodKind.salad: [
           Food(foodName: "샐러디", foodKind: FoodKind.salad),
+          Food(foodName: "샐러드박스", foodKind: FoodKind.salad),
           Food(foodName: "포케올데이", foodKind: FoodKind.salad),
+          Food(foodName: "주니아", foodKind: FoodKind.salad),
+          Food(foodName: "죠샌드위치", foodKind: FoodKind.salad),
         ],
-        FoodKind.etc: [Food(foodName: "CU", foodKind: FoodKind.etc)],
+        FoodKind.etc: [Food(foodName: "CU", foodKind: FoodKind.etc),
+          Food(foodName: "돈카춘", foodKind: FoodKind.etc),
+          Food(foodName: "꽃찬 찜닭", foodKind: FoodKind.etc)
+        ],
       };
       _instance = RestaurantProvider._internal(internalData);
     }
