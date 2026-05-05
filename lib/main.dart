@@ -197,6 +197,25 @@ class _AppPageState extends State<AppPage> {
                     },
                   ),
                 ),
+                if (foodList.isEmpty)
+                  Expanded(
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.data_array_rounded),
+                          Text(
+                            "조건에 부합하는 음식점이 없습니다.",
+                            style: Theme
+                                .of(context)
+                                .textTheme
+                                .bodyMedium,
+                          ),
+                        ],
+                      ),
+                    ),
+                  )
+                else
                 Expanded(
                   child: ListView.builder(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
