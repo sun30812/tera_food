@@ -335,15 +335,22 @@ class FoodInfoCard extends StatelessWidget {
             color: Theme.of(context).colorScheme.primary,
           ),
           children: [
-            Row(
-              spacing: 8.0,
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                IconButton(onPressed: null, icon: Icon(Icons.delete_outline)),
-                BeatingHeartIconButton(initialActivated: food.preference == FoodPreference.like,onPressed: (isClicked) {
-                  provider?.updatePreference(food: food,preference: isClicked ? FoodPreference.like: FoodPreference.neutral);
-                })
-              ],
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                spacing: 8.0,
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  BeatingHeartIconButton(
+                      initialActivated: food.preference == FoodPreference.like,
+                      onPressed: (isClicked) {
+                        provider?.updatePreference(food: food,
+                            preference: isClicked
+                                ? FoodPreference.like
+                                : FoodPreference.neutral);
+                      }),
+                ],
+              ),
             ),
           ],
         ),

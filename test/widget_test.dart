@@ -54,15 +54,7 @@ void main() {
             .first,
         matching: find.byIcon(Icons.favorite_border)
     );
-
-    final dislikeButton = find.descendant(
-        of: find
-            .byType(FoodInfoCard)
-            .first,
-        matching: find.byIcon(Icons.favorite_border)
-    );
     expect(favoriteButton, findsOneWidget);
-    expect(dislikeButton, findsOneWidget);
   });
 
   /// 추천 버튼을 눌렀을 때 추천 다이얼로그가 표시되는지 검증한다.
