@@ -54,6 +54,8 @@ class AppPage extends StatefulWidget {
 /// 음식 종류 선택, 음식점 목록 및 음식점에 대한 즐겨찾기 및 추천 제외 버튼을 포함한 카드를 표시한다.
 class _AppPageState extends State<AppPage> {
   /// 현재 선택된 음식점 종류.
+  ///
+  /// 음식점 종류 별로 음식점 목록을 표시할 때 사용된다.
   late FoodKind foodKind;
 
   // 음식점 데이터를 비동기로 제공하는 provider future.
@@ -144,6 +146,7 @@ class _AppPageState extends State<AppPage> {
           );
         }
 
+        /// 음식점 정보 로딩 이후 [RestaurantProvider]를 사용하여 음식점 정보를 가져온다.
         final restaurantProvider = asyncSnapshot.data;
         final foodList = restaurantProvider?.foods(
             foodKind, showOnlyFavorite: _showOnlyFavorite) ?? [];
@@ -219,7 +222,7 @@ class _AppPageState extends State<AppPage> {
     );
   }
 
-  /// 앱의 전반적인 부분에서 사용될 [AppBar]
+  /// 앱에서 기본으로 사용하는 [AppBar]를 반환한다.
   ///
   /// [isChecked]와 [onChanged]가 제공된 경우, 즐겨찾기만 보기 토글 버튼이 표시된다. 토글 버튼이 눌릴 때마다 [onChanged]가 호출되어 상태 변경을 처리할 수 있다.
   /// 즐겨찿기 토글 활성화 여부에 대한 제어를 위해 [isChecked] 에 관련 상태를 제어하는 변수 전달이 필요하며, 전달되지 않는 경우 항상 비활성화된 토글 버튼이 표시된다.
@@ -306,6 +309,8 @@ class FoodInfoCard extends StatelessWidget {
   final Food food;
 
   /// [ExpansionTile]의 확장 상태를 제어하는 컨트롤러.
+  ///
+  /// 음식점의 종류 변경 시 확장된 카드를 원래대로 되돌린다.
   final ExpansibleController controller;
 
   /// 음식점에 대한 데이터 저장소에 접근하기 위한 필드.

@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 /// 누를 시 크기가 확대/축소 되는 Heart 모양의 버튼.
 ///
 /// [initialActivated]가 true로 설정되면 초기 상태가 활성화된 즐겨찾기 버튼으로 시작한다.
-/// [onPressed] 콜백이 제공되면 버튼이 활성화되고, 누를 때마다 애니메이션이 재생된다. 콜백이 null이면 버튼은 비활성화된다.
-/// 버튼 클릭 시 [onPressed] 콜백이 호출되며, 현재 활성화 상태가 전달된다. 활성화 상태는 버튼이 눌릴 때마다 토글된다.
+/// [onPressed] 콜백이 제공되면 버튼을 누를 수 있으며,
+/// 누를 때마다 애니메이션이 재생된다. 콜백이 null이면 버튼은 비활성화된다.
 class BeatingHeartIconButton extends StatefulWidget {
   /// 버튼의 초기 활성화 상태.
   ///
@@ -26,7 +26,8 @@ class _BeatingHeartIconButtonState extends State<BeatingHeartIconButton>
   late final AnimationController _controller;
   // 애니메이션 동작을 정의하는 객체
   late final Animation<double> _animation;
-  // 즐겨찾기 버튼 눌림 여부 확인
+
+  // 즐겨찾기 활성화 여부
   late bool _isEnabled = widget.initialActivated;
 
   @override
@@ -45,8 +46,8 @@ class _BeatingHeartIconButtonState extends State<BeatingHeartIconButton>
 
   @override
   void dispose() {
-    super.dispose();
     _controller.dispose();
+    super.dispose();
   }
 
   @override
