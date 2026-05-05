@@ -6,6 +6,7 @@ import 'package:tera_food/provider/model/food.dart';
 import 'package:tera_food/provider/restaurant_provider.dart';
 import 'package:tera_food/style/buttons.dart';
 import 'package:tera_food/types/food_kind.dart';
+import 'package:tera_food/types/food_preference.dart';
 
 /// 앱 전체에서 사용하는 이름.
 const appName = "테라타워 음식점 추천";
@@ -50,9 +51,11 @@ class AppPage extends StatefulWidget {
 
 /// [AppPage]의 상태를 관리한다.
 ///
-/// 음식 종류 선택, 음식점 목록 및 음식점에 대한 즐겨찾기 및 추천 제외 버튼을 포함한 카드를 표시한다.
+/// 음식점 종류로 필터링된, 필요 시 음식점을 즐겨찾기에 추가할 수 있는 [FoodInfoCard]를 표시하는 화면이다.
 class _AppPageState extends State<AppPage> {
   /// 현재 선택된 음식점 종류.
+  ///
+  /// 음식점 종류 별로 음식점 목록을 표시할 때 사용된다.
   late FoodKind foodKind;
 
   // 음식점 데이터를 비동기로 제공하는 provider future.
@@ -60,6 +63,9 @@ class _AppPageState extends State<AppPage> {
 
   /// 마지막으로 추천된 음식점 정보.
   Food? recommendedFood;
+
+  // 즐겨찾기만 보기 필터 상태
+  bool _showOnlyFavorite = false;
 
   // 음식점 카드 확장 상태를 제어하는 컨트롤러 목록.
   final List<ExpansibleController> _expansionControllers = [];
@@ -140,8 +146,10 @@ class _AppPageState extends State<AppPage> {
           );
         }
 
-        foodKind = asyncSnapshot.data != null ? foodKind : FoodKind.noodle;
-        final foodList = asyncSnapshot.data?.foods(foodKind) ?? [];
+        /// 음식점 정보 로딩 이후 [RestaurantProvider]를 사용하여 음식점 정보를 가져온다.
+        final restaurantProvider = asyncSnapshot.data;
+        final foodList = restaurantProvider?.foods(
+            foodKind, showOnlyFavorite: _showOnlyFavorite) ?? [];
 
         // 음식점 카드 수만큼 확장 컨트롤러를 준비한다.
         for (int i = 0; i < foodList.length; i++) {
@@ -154,7 +162,13 @@ class _AppPageState extends State<AppPage> {
         _recommendedFoods.addAll(foodList);
 
         return Scaffold(
-          appBar: mainAppBar(context),
+          appBar: mainAppBar(
+              context, isChecked: _showOnlyFavorite, onChanged: (value) {
+            setState(() {
+              _showOnlyFavorite = value ?? false;
+            });
+            _refreshUI();
+          }),
           body: RefreshIndicator(
             onRefresh: () async {
               _refreshUI();
@@ -183,6 +197,25 @@ class _AppPageState extends State<AppPage> {
                     },
                   ),
                 ),
+                if (foodList.isEmpty)
+                  Expanded(
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.data_array_rounded),
+                          Text(
+                            "조건에 부합하는 음식점이 없습니다.",
+                            style: Theme
+                                .of(context)
+                                .textTheme
+                                .bodyMedium,
+                          ),
+                        ],
+                      ),
+                    ),
+                  )
+                else
                 Expanded(
                   child: ListView.builder(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -191,6 +224,7 @@ class _AppPageState extends State<AppPage> {
                       return FoodInfoCard(
                         food: foodList[index],
                         controller: _expansionControllers[index],
+                        provider: restaurantProvider,
                       );
                     },
                   ),
@@ -207,14 +241,29 @@ class _AppPageState extends State<AppPage> {
     );
   }
 
-  /// 앱의 전반적인 부분에서 사용될 [AppBar]
-  AppBar mainAppBar(BuildContext context) {
+  /// 앱에서 기본으로 사용하는 [AppBar]를 반환한다.
+  ///
+  /// [isChecked]와 [onChanged]가 제공된 경우, 즐겨찾기만 보기 토글 버튼이 표시된다. 토글 버튼이 눌릴 때마다 [onChanged]가 호출되어 상태 변경을 처리할 수 있다.
+  /// 즐겨찿기 토글 활성화 여부에 대한 제어를 위해 [isChecked] 에 관련 상태를 제어하는 변수 전달이 필요하며, 전달되지 않는 경우 항상 비활성화된 토글 버튼이 표시된다.
+  AppBar mainAppBar(BuildContext context,
+      {bool isChecked = false, void Function(bool?)? onChanged}) {
     return AppBar(
-      title: Text(
-        appName,
-        style: Theme.of(
-          context,
-        ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+      title: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            appName,
+            style: Theme
+                .of(
+              context,
+            )
+                .textTheme
+                .headlineSmall
+                ?.copyWith(fontWeight: FontWeight.bold),
+          ),
+          if (onChanged != null)
+            BeatingHeartIconButton(onPressed: onChanged),
+        ],
       ),
     );
   }
@@ -264,20 +313,29 @@ class RecommendDialog extends StatelessWidget {
 
 /// 음식점 정보를 카드 형태로 표시하는 위젯.
 ///
-/// [food]로 제공된 정보를 출략하며, 카드 확장 상태는 [controller]로 제어된다.
+/// [food]로 제공된 음식점 정보를 출력하며, 카드 확장 상태는 [controller]로 제어된다.
+/// 음식점 정보에 대해 수정 필요 시 [provider]로 저장소를 직접 전달하여 변경내역을 저장소에 반영할 수 있다.
 class FoodInfoCard extends StatelessWidget {
   /// 음식점 카드 인스턴스를 생성한다.
   const FoodInfoCard({
     super.key,
     required this.food,
     required this.controller,
+    this.provider,
   });
 
   /// 카드에 표시할 음식점 정보
   final Food food;
 
   /// [ExpansionTile]의 확장 상태를 제어하는 컨트롤러.
+  ///
+  /// 음식점의 종류 변경 시 확장된 카드를 원래대로 되돌린다.
   final ExpansibleController controller;
+
+  /// 음식점에 대한 데이터 저장소에 접근하기 위한 필드.
+  ///
+  /// 음식점에 대한 선호도 변경 시 변경내역을 저장소에 반영하기 위해 사용된다.
+  final RestaurantProvider? provider;
 
   @override
   Widget build(BuildContext context) {
@@ -301,13 +359,22 @@ class FoodInfoCard extends StatelessWidget {
             color: Theme.of(context).colorScheme.primary,
           ),
           children: [
-            Row(
-              spacing: 8.0,
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                IconButton(onPressed: null, icon: Icon(Icons.delete_outline)),
-                BeatingHeartIconButton(onPressed: null)
-              ],
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                spacing: 8.0,
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  BeatingHeartIconButton(
+                      initialActivated: food.preference == FoodPreference.like,
+                      onPressed: (isClicked) {
+                        provider?.updatePreference(food: food,
+                            preference: isClicked
+                                ? FoodPreference.like
+                                : FoodPreference.neutral);
+                      }),
+                ],
+              ),
             ),
           ],
         ),

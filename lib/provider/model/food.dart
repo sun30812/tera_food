@@ -11,10 +11,24 @@ class Food {
   /// 음식점의 주요 음식의 대분류.
   final FoodKind foodKind;
   /// 음식점에 대한 선호도 정보.
-  final FoodPreference preference = FoodPreference.neutral;
+  final FoodPreference preference;
 
   Food({
     required this.foodName,
     required this.foodKind,
+    this.preference = FoodPreference.neutral,
   });
+
+  /// 음식점 정보 중 일부만 변경하여 새로운 [Food] 객체를 생성하는 메서드.
+  Food copyWith({
+    String? foodName,
+    FoodKind? foodKind,
+    FoodPreference? preference,
+  }) {
+    return Food(
+      foodName: foodName ?? this.foodName,
+      foodKind: foodKind ?? this.foodKind,
+      preference: preference ?? this.preference,
+    );
+  }
 }
