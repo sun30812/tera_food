@@ -51,7 +51,7 @@ class AppPage extends StatefulWidget {
 
 /// [AppPage]의 상태를 관리한다.
 ///
-/// 음식 종류 선택, 음식점 목록 및 음식점에 대한 즐겨찾기 및 추천 제외 버튼을 포함한 카드를 표시한다.
+/// 음식점 종류로 필터링된, 필요 시 음식점을 즐겨찾기에 추가할 수 있는 [FoodInfoCard]를 표시하는 화면이다.
 class _AppPageState extends State<AppPage> {
   /// 현재 선택된 음식점 종류.
   ///
@@ -313,7 +313,7 @@ class RecommendDialog extends StatelessWidget {
 
 /// 음식점 정보를 카드 형태로 표시하는 위젯.
 ///
-/// [food]로 제공된 정보를 출략하며, 카드 확장 상태는 [controller]로 제어된다.
+/// [food]로 제공된 음식점 정보를 출력하며, 카드 확장 상태는 [controller]로 제어된다.
 /// 음식점 정보에 대해 수정 필요 시 [provider]로 저장소를 직접 전달하여 변경내역을 저장소에 반영할 수 있다.
 class FoodInfoCard extends StatelessWidget {
   /// 음식점 카드 인스턴스를 생성한다.
