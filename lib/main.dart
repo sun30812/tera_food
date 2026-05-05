@@ -62,6 +62,9 @@ class _AppPageState extends State<AppPage> {
   /// 마지막으로 추천된 음식점 정보.
   Food? recommendedFood;
 
+  // 즐겨찾기만 보기 필터 상태
+  bool _showOnlyFavorite = false;
+
   // 음식점 카드 확장 상태를 제어하는 컨트롤러 목록.
   final List<ExpansibleController> _expansionControllers = [];
 
@@ -141,8 +144,9 @@ class _AppPageState extends State<AppPage> {
           );
         }
 
-        foodKind = asyncSnapshot.data != null ? foodKind : FoodKind.noodle;
-        final foodList = asyncSnapshot.data?.foods(foodKind) ?? [];
+        final restaurantProvider = asyncSnapshot.data;
+        final foodList = restaurantProvider?.foods(
+            foodKind, showOnlyFavorite: _showOnlyFavorite) ?? [];
 
         // 음식점 카드 수만큼 확장 컨트롤러를 준비한다.
         for (int i = 0; i < foodList.length; i++) {
@@ -155,7 +159,13 @@ class _AppPageState extends State<AppPage> {
         _recommendedFoods.addAll(foodList);
 
         return Scaffold(
-          appBar: mainAppBar(context),
+          appBar: mainAppBar(
+              context, isChecked: _showOnlyFavorite, onChanged: (value) {
+            setState(() {
+              _showOnlyFavorite = value ?? false;
+            });
+            _refreshUI();
+          }),
           body: RefreshIndicator(
             onRefresh: () async {
               _refreshUI();
@@ -192,7 +202,7 @@ class _AppPageState extends State<AppPage> {
                       return FoodInfoCard(
                         food: foodList[index],
                         controller: _expansionControllers[index],
-                        provider: asyncSnapshot.data,
+                        provider: restaurantProvider,
                       );
                     },
                   ),
@@ -210,13 +220,28 @@ class _AppPageState extends State<AppPage> {
   }
 
   /// 앱의 전반적인 부분에서 사용될 [AppBar]
-  AppBar mainAppBar(BuildContext context) {
+  ///
+  /// [isChecked]와 [onChanged]가 제공된 경우, 즐겨찾기만 보기 토글 버튼이 표시된다. 토글 버튼이 눌릴 때마다 [onChanged]가 호출되어 상태 변경을 처리할 수 있다.
+  /// 즐겨찿기 토글 활성화 여부에 대한 제어를 위해 [isChecked] 에 관련 상태를 제어하는 변수 전달이 필요하며, 전달되지 않는 경우 항상 비활성화된 토글 버튼이 표시된다.
+  AppBar mainAppBar(BuildContext context,
+      {bool isChecked = false, void Function(bool?)? onChanged}) {
     return AppBar(
-      title: Text(
-        appName,
-        style: Theme.of(
-          context,
-        ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+      title: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            appName,
+            style: Theme
+                .of(
+              context,
+            )
+                .textTheme
+                .headlineSmall
+                ?.copyWith(fontWeight: FontWeight.bold),
+          ),
+          if (onChanged != null)
+            BeatingHeartIconButton(onPressed: onChanged),
+        ],
       ),
     );
   }

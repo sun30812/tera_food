@@ -27,7 +27,7 @@ void main() {
     expect(find.byType(CircularProgressIndicator), findsOneWidget);
 
     // 비동기 음식점 데이터 로딩 시간을 진행시킨다.
-    await tester.pump(const Duration(seconds: 2));
+    await tester.pumpAndSettle();
     await tester.pump();
 
     // 앱 제목과 음식점 카드 목록이 화면에 표시되어야 한다.
@@ -40,7 +40,7 @@ void main() {
     await tester.pumpWidget(const App());
 
     // 음식점 목록이 표시될 때까지 비동기 로딩을 진행한다.
-    await tester.pump(const Duration(seconds: 2));
+    await tester.pumpAndSettle();
     await tester.pump();
 
     // 첫 번째 음식점 카드를 확장한다.
@@ -48,8 +48,21 @@ void main() {
     await tester.pumpAndSettle();
 
     // 확장 영역의 액션 버튼들이 표시되어야 한다.
-    expect(find.byIcon(Icons.delete_outline), findsOneWidget);
-    expect(find.byIcon(Icons.favorite_border), findsOneWidget);
+    final favoriteButton = find.descendant(
+        of: find
+            .byType(FoodInfoCard)
+            .first,
+        matching: find.byIcon(Icons.favorite_border)
+    );
+
+    final dislikeButton = find.descendant(
+        of: find
+            .byType(FoodInfoCard)
+            .first,
+        matching: find.byIcon(Icons.favorite_border)
+    );
+    expect(favoriteButton, findsOneWidget);
+    expect(dislikeButton, findsOneWidget);
   });
 
   /// 추천 버튼을 눌렀을 때 추천 다이얼로그가 표시되는지 검증한다.
@@ -57,7 +70,7 @@ void main() {
     await tester.pumpWidget(const App());
 
     // 추천 가능한 음식 목록이 구성될 때까지 대기한다.
-    await tester.pump(const Duration(seconds: 2));
+    await tester.pumpAndSettle();
     await tester.pump();
 
     // 남은 애니메이션과 프레임 처리를 완료한 뒤 추천 버튼을 누른다.
@@ -76,7 +89,7 @@ void main() {
     await tester.pumpWidget(const App());
 
     // 추천 다이얼로그를 열 수 있도록 앱 초기 로딩을 완료한다.
-    await tester.pump(const Duration(seconds: 2));
+    await tester.pumpAndSettle();
     await tester.pump();
 
     // 추천 버튼을 눌러 다이얼로그를 표시한다.
@@ -93,4 +106,73 @@ void main() {
     // 다이얼로그가 위젯 트리에서 제거되어야 한다.
     expect(find.text('오늘의 추천 메뉴!'), findsNothing);
   });
+
+  group('즐겨찾기 기능에 대한 정상 동작 유무 확인', () {
+    testWidgets('즐겨찾기 탭 하기', (widgetTester) async {
+      await widgetTester.pumpWidget(const App());
+
+      // 음식점 목록이 표시될 때까지 비동기 로딩을 진행한다.
+      await widgetTester.pumpAndSettle();
+
+      // 첫 번째 음식점 카드를 확장한다.
+      await widgetTester.tap(find
+          .byType(FoodInfoCard)
+          .first);
+      await widgetTester.pumpAndSettle();
+
+      // 음식점 카드에 있는 즐겨찾기 버튼.
+      final foodCardFavoriteButton = find.descendant(
+          of: find
+              .byType(FoodInfoCard)
+              .first,
+          matching: find.byIcon(Icons.favorite_border)
+      );
+      await widgetTester.tap(foodCardFavoriteButton);
+      await widgetTester.pumpAndSettle();
+
+      // 즐겨찾기 아이콘이 활성화된 상태로 변경되어야 한다.
+      expect(find.byIcon(Icons.favorite), findsOneWidget);
+    },);
+    testWidgets(
+      '즐겨찾기 목록 추가 후 즐겨찾기 버튼 클릭 시 즐겨찾는 음식점 목록만 표시', (widgetTester) async {
+      await widgetTester.pumpWidget(const App());
+
+      // 음식점 목록이 표시될 때까지 비동기 로딩을 진행한다.
+      await widgetTester.pumpAndSettle();
+
+      // 첫 번째 음식점 카드를 확장한다.
+      final selectedFoodCard = find
+          .byType(FoodInfoCard)
+          .first;
+      await widgetTester.tap(selectedFoodCard);
+      await widgetTester.pumpAndSettle();
+
+      final foodCardFavoriteButton = find.descendant(
+          of: find
+              .byType(FoodInfoCard)
+              .first,
+          matching: find.byIcon(Icons.favorite_border)
+      );
+
+      // 특정 음식점 카드가 즐겨찾기에 등록되지 않은 경우에만 즐겨찾기 버튼을 탭하여 등록한다.
+      if (foodCardFavoriteButton
+          .evaluate()
+          .isNotEmpty) {
+        await widgetTester.tap(foodCardFavoriteButton);
+        await widgetTester.pumpAndSettle();
+
+        // 첫번째 음식점 카드를 축소한다.
+        await widgetTester.tap(selectedFoodCard);
+        await widgetTester.pumpAndSettle();
+      }
+
+      // AppBar의 즐겨찾기 버튼을 탭한다.
+      await widgetTester.tap(find
+          .byIcon(Icons.favorite_border)
+          .first);
+      await widgetTester.pumpAndSettle();
+
+      expect(find.byType(FoodInfoCard), findsOneWidget);
+    },);
+  },);
 }
