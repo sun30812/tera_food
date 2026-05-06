@@ -7,7 +7,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tera_food/main.dart';
+import 'package:tera_food/types/food_kind.dart';
 
 /// 앱 위젯 테스트 진입점.
 ///
@@ -18,6 +20,14 @@ import 'package:tera_food/main.dart';
 /// - 음식점 카드 확장
 /// - 추천 다이얼로그 표시 및 닫기
 void main() {
+  setUpAll(() async {
+    // 테스트 실행 전에 앱의 설정을 초기화한다.
+    SharedPreferences.setMockInitialValues(
+        {
+          'default_food_kind': FoodKind.noodle.name,
+        }
+    );
+  });
   /// 앱 실행 직후 로딩 UI를 표시하고,
   /// 데이터 로딩 이후 음식점 목록을 렌더링하는지 검증한다.
   testWidgets('앱 실행 시 로딩 후 음식점 목록이 표시된다', (WidgetTester tester) async {
@@ -167,4 +177,16 @@ void main() {
       expect(find.byType(FoodInfoCard), findsOneWidget);
     },);
   },);
+  group('앱의 설정에 대한 정상 반영여부 확인', () {
+    testWidgets(
+      '설정에서 기본 음식점 종류 변경 시, 변경된 음식점 종류가 앱에 반영되는지 확인', (widgetTester) async {
+      await widgetTester.pumpWidget(const App());
+
+      // 앱 초기 로딩이 완료될 때까지 대기한다.
+      await widgetTester.pumpAndSettle();
+
+      expect(find.text('면류'), findsOneWidget);
+      expect(find.text('고스락 칼국수'), findsOneWidget);
+    },);
+  });
 }

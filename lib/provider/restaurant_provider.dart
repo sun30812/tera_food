@@ -1,4 +1,5 @@
 import 'package:tera_food/provider/model/food.dart';
+import 'package:tera_food/provider/settings_provider.dart';
 import 'package:tera_food/types/food_kind.dart';
 import 'package:tera_food/types/food_preference.dart';
 
@@ -7,12 +8,16 @@ import 'package:tera_food/types/food_preference.dart';
 /// [FoodKind]별 음식점 목록을 포함하는 데이터를 관리하며, 앱 전체에서 공유되는 싱글톤 인스턴스를 제공한다.
 /// 인스턴스 초기화 필요 시 반드시 [getSampleInstance] 메서드를 통해 데이터를 초기화하여 인스턴스를 생성해야 한다.
 class RestaurantProvider {
-  RestaurantProvider._internal(this._foodData);
+  RestaurantProvider._internal(this._foodData, this._defaultFoodKind);
 
   /// [Food]으로 작성된 음식점 목록을 [FoodKind]별로 매핑한 데이터.
   final Map<FoodKind, List<Food>>? _foodData;
 
+  final FoodKind? _defaultFoodKind;
+
   static RestaurantProvider? _instance;
+
+  FoodKind get defaultFoodKind => _defaultFoodKind ?? FoodKind.all;
 
   /// [foodKind]에 해당하는 음식점 목록을 [Food] 형으로 반환한다.
   ///
@@ -67,7 +72,7 @@ class RestaurantProvider {
   /// 해당 데이터는 Sample 이며, 추후 Firebase 를 이용하여 정보를 가져올 예정이다.
   static Future<RestaurantProvider> getSampleInstance() async {
     if (_instance == null) {
-      await Future.delayed(const Duration(seconds: 1)); // 예시로 1초 지연
+      final settingsProvider = await SettingsProvider.getInstance();
       final internalData = {
         FoodKind.noodle: [
           Food(foodName: "고스락 칼국수", foodKind: FoodKind.noodle),
@@ -114,7 +119,8 @@ class RestaurantProvider {
           Food(foodName: "꽃찬 찜닭", foodKind: FoodKind.etc)
         ],
       };
-      _instance = RestaurantProvider._internal(internalData);
+      _instance = RestaurantProvider._internal(
+          internalData, settingsProvider.getDefaultFoodKind());
     }
     return RestaurantProvider._instance!;
   }
