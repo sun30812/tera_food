@@ -70,9 +70,14 @@ class RestaurantProvider {
   /// 싱글톤 인스턴스가 아직 생성되지 않은 경우, 데이터를 초기화하여 인스턴스를 생성한다.
   ///
   /// 해당 데이터는 Sample 이며, 추후 Firebase 를 이용하여 정보를 가져올 예정이다.
-  static Future<RestaurantProvider> getSampleInstance() async {
+  /// [skipInitializeSettingsProvider]가 true로 설정되면 [SettingsProvider]의 인스턴스 초기화를 건너뛴다.
+  /// 이는 테스트 시 [SettingsProvider]의 초기화가 필요 없는 경우에 유용하다.
+  static Future<RestaurantProvider> getSampleInstance(
+      {bool skipInitializeSettingsProvider = false}) async {
     if (_instance == null) {
-      final settingsProvider = await SettingsProvider.getInstance();
+      final settingsProvider = !skipInitializeSettingsProvider
+          ? await SettingsProvider.getInstance()
+          : null;
       final internalData = {
         FoodKind.noodle: [
           Food(foodName: "고스락 칼국수", foodKind: FoodKind.noodle),
@@ -120,7 +125,7 @@ class RestaurantProvider {
         ],
       };
       _instance = RestaurantProvider._internal(
-          internalData, settingsProvider.getDefaultFoodKind());
+          internalData, settingsProvider?.getDefaultFoodKind());
     }
     return RestaurantProvider._instance!;
   }

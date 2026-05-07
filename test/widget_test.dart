@@ -20,7 +20,7 @@ import 'package:tera_food/types/food_kind.dart';
 /// - 음식점 카드 확장
 /// - 추천 다이얼로그 표시 및 닫기
 void main() {
-  setUpAll(() async {
+  setUp(() async {
     // 테스트 실행 전에 앱의 설정을 초기화한다.
     SharedPreferences.setMockInitialValues(
         {
@@ -185,8 +185,17 @@ void main() {
       // 앱 초기 로딩이 완료될 때까지 대기한다.
       await widgetTester.pumpAndSettle();
 
-      expect(find.text('면류'), findsOneWidget);
+      // 기본 음식점 종류가 면류로 되어있을 시 음식점 출력 화면에서 면류만 출력되는지 확인한다.
+      final noodleDropdownButton = find
+          .descendant(
+        of: find.byType(DropdownMenu<FoodKind>),
+        matching: find.text('면류'),
+      )
+          .first;
+
+      expect(noodleDropdownButton, findsOneWidget);
       expect(find.text('고스락 칼국수'), findsOneWidget);
+      expect(find.text('CU'), findsNothing);
     },);
   });
 }

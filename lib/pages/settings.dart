@@ -40,42 +40,45 @@ class _SettingsPageState extends State<SettingsPage> {
                 asyncSnapshot.data?.getDefaultFoodKind() ?? FoodKind.all;
             return Column(
               children: [
-                Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: const ListTile(
-                            title: Text('기본 음식점 종류 설정'),
-                            subtitle: Text(
-                              '처음 화면 진입 시 기본으로 표시할 음식점 종류를 설정합니다.',
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: const ListTile(
+                              title: Text('기본 음식점 종류 설정'),
+                              subtitle: Text(
+                                '처음 화면 진입 시 기본으로 표시할 음식점 종류를 설정합니다.',
+                              ),
+                              leading: Icon(Icons.food_bank_outlined),
                             ),
-                            leading: Icon(Icons.food_bank_outlined),
                           ),
-                        ),
-                        DropdownMenu(
-                          width: MediaQuery.of(context).size.width - 32,
-                          initialSelection: _selectedFoodKind,
-                          dropdownMenuEntries: FoodKind.values
-                              .map(
-                                (item) => DropdownMenuEntry(
-                                  value: item,
-                                  label: item.label,
-                                ),
-                              )
-                              .toList(),
-                          onSelected: (value) {
-                            if (value != null) {
-                              setState(() {
-                                _selectedFoodKind = value;
-                                asyncSnapshot.data?.setDefaultFoodKind(value);
-                              });
-                            }
-                          },
-                        ),
-                      ],
+                          DropdownMenu(
+                            width: MediaQuery.of(context).size.width - 32,
+                            initialSelection: _selectedFoodKind,
+                            dropdownMenuEntries: FoodKind.values
+                                .map(
+                                  (item) => DropdownMenuEntry(
+                                    value: item,
+                                    label: item.label,
+                                  ),
+                                )
+                                .toList(),
+                            onSelected: (value) {
+                              if (value != null) {
+                                setState(() {
+                                  _selectedFoodKind = value;
+                                  asyncSnapshot.data?.setDefaultFoodKind(value);
+                                });
+                              }
+                            },
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
