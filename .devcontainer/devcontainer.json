@@ -13,8 +13,7 @@
     "ghcr.io/devcontainers/features/sshd": {
       "version": "latest"
     },
-    "ghcr.io/devcontainers/features/java" : {},
-    "ghcr.io/devcontainers-extra/features/firebase-cli" : {},
+    "ghcr.io/devcontainers-extra/features/firebase-cli" : {}
   },
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
   // "forwardPorts": [],
@@ -24,7 +23,6 @@
       "extensions": [
         "Dart-Code.dart-code",
         "Dart-Code.flutter",
-        "vscodevim.vim"
       ]
     }
   },
