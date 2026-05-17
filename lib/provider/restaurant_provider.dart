@@ -126,6 +126,7 @@ class RestaurantProvider {
           "한끼의 정석 dine",
           "정담은 한상",
           "장금이한식뷔페",
+          "나드리김밥"
         ],
         FoodKind.bread: [
           "뉴욕 버거",
@@ -139,6 +140,8 @@ class RestaurantProvider {
           "맑은곰탕",
           "명백집",
           "북촌손만두",
+          "송탄부대찌개",
+          "자래순두부",
         ],
         FoodKind.salad: [
           "샐러디",
@@ -146,6 +149,8 @@ class RestaurantProvider {
           "포케올데이",
           "주니아",
           "죠샌드위치",
+          "파리바게트",
+          "뚜레주르"
         ],
         FoodKind.etc: [
           "CU",
