@@ -11,6 +11,7 @@ class SettingsProvider {
   // 음식점 종류 설정 관리용 키
   static const String _defaultFoodKindKey = 'default_food_kind';
 
+  // 즐겨찾는 음식점 목록 키
   static const String _favoriteFoodKey = 'favorite_food_names';
 
   static SettingsProvider? _instance;
@@ -31,7 +32,7 @@ class SettingsProvider {
   /// 줄겨찾는 음식점 목록을 초기화 한다.
   ///
   /// 저장소에 등록된 즐겨찾는 음식점 목록에 대한 데이터를 삭제한다.
-  void clearFavoriteFoodList() => _pref.remove(_favoriteFoodKey);
+  void resetFavoriteFoodList() => _pref.remove(_favoriteFoodKey);
 
   /// 즐겨찾는 음식점 목록을 저장소에서 가져와 반환한다.
   Set<String> getFavoriteFoodList() =>
@@ -42,6 +43,9 @@ class SettingsProvider {
     _pref.getString(_defaultFoodKindKey) ?? FoodKind.all.name,
   );
 
+  /// [SettingsProvider] 의 인스턴스를 초기화 하는 정적 메서드이다.
+  ///
+  /// 이미 인스턴스 존재 시 존재하는 인스턴스를 반환하며, 없을 시 인스턴스를 새로 생성한다.
   static Future<SettingsProvider> getInstance() async =>
       SettingsProvider._instance ??
       SettingsProvider._internal(await SharedPreferences.getInstance());

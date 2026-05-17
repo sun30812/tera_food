@@ -127,7 +127,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                     TextButton(
                                       onPressed: () {
                                         asyncSnapshot.data
-                                            ?.clearFavoriteFoodList();
+                                            ?.resetFavoriteFoodList();
                                         setState(() {
                                           _isFavoriteReset = true;
                                         });
