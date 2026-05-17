@@ -9,7 +9,8 @@ import 'package:tera_food/types/food_preference.dart';
 /// - 모든 음식점 목록 정상 반환여부
 void main() {
   test('조건에 맞는 음식점 목록을 정상적으로 가져오는지 테스트', () async {
-    RestaurantProvider provider = await RestaurantProvider.getSampleInstance();
+    RestaurantProvider provider = await RestaurantProvider.getSampleInstance(
+        skipInitializeSettingsProvider: true);
     expect(provider
         .foods(FoodKind.etc)
         .first
@@ -21,7 +22,8 @@ void main() {
   });
 
   test('모든 음식점 목록을 정상적으로 가져오는지 테스트', () async {
-    RestaurantProvider provider = await RestaurantProvider.getSampleInstance();
+    RestaurantProvider provider = await RestaurantProvider.getSampleInstance(
+        skipInitializeSettingsProvider: true);
     expect(provider
         .foods(FoodKind.all)
         .where((food) => food.foodKind == FoodKind.bread)
@@ -49,7 +51,8 @@ void main() {
   });
 
   test('선호도 업데이트 기능이 정상적으로 작동하는지 테스트', () async {
-    RestaurantProvider provider = await RestaurantProvider.getSampleInstance();
+    RestaurantProvider provider = await RestaurantProvider.getSampleInstance(
+        skipInitializeSettingsProvider: true);
     final food = provider.foods(FoodKind.etc).first;
     expect(food.preference, FoodPreference.neutral);
 

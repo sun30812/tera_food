@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widget_previews.dart';
+import 'package:tera_food/pages/settings.dart';
 import 'package:tera_food/provider/model/food.dart';
 import 'package:tera_food/provider/restaurant_provider.dart';
 import 'package:tera_food/style/buttons.dart';
@@ -56,7 +57,7 @@ class _AppPageState extends State<AppPage> {
   /// 현재 선택된 음식점 종류.
   ///
   /// 음식점 종류 별로 음식점 목록을 표시할 때 사용된다.
-  late FoodKind foodKind;
+  FoodKind? foodKind;
 
   // 음식점 데이터를 비동기로 제공하는 provider future.
   late final Future<RestaurantProvider> _restaurantProviderFuture;
@@ -89,8 +90,7 @@ class _AppPageState extends State<AppPage> {
   void initState() {
     super.initState();
 
-    // 기본 음식 종류와 음식점 provider를 초기화한다.
-    foodKind = FoodKind.noodle;
+    // 음식점 provider를 초기화한다.
     _restaurantProviderFuture = RestaurantProvider.getSampleInstance();
   }
 
@@ -148,8 +148,10 @@ class _AppPageState extends State<AppPage> {
 
         /// 음식점 정보 로딩 이후 [RestaurantProvider]를 사용하여 음식점 정보를 가져온다.
         final restaurantProvider = asyncSnapshot.data;
+        foodKind ??= restaurantProvider?.defaultFoodKind;
         final foodList = restaurantProvider?.foods(
-            foodKind, showOnlyFavorite: _showOnlyFavorite) ?? [];
+            foodKind ?? FoodKind.all, showOnlyFavorite: _showOnlyFavorite) ??
+            [];
 
         // 음식점 카드 수만큼 확장 컨트롤러를 준비한다.
         for (int i = 0; i < foodList.length; i++) {
@@ -261,8 +263,17 @@ class _AppPageState extends State<AppPage> {
                 .headlineSmall
                 ?.copyWith(fontWeight: FontWeight.bold),
           ),
-          if (onChanged != null)
-            BeatingHeartIconButton(onPressed: onChanged),
+
+          Row(
+            children: [
+              IconButton(onPressed: () =>
+                  Navigator.push(context, MaterialPageRoute(
+                    builder: (context) => const SettingsPage(),)),
+                  icon: Icon(Icons.settings_outlined)),
+              if (onChanged != null)
+                BeatingHeartIconButton(onPressed: onChanged),
+            ],
+          )
         ],
       ),
     );
