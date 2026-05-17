@@ -8,20 +8,25 @@ import 'package:tera_food/types/food_preference.dart';
 /// [FoodKind]별 음식점 목록을 포함하는 데이터를 관리하며, 앱 전체에서 공유되는 싱글톤 인스턴스를 제공한다.
 /// 인스턴스 초기화 필요 시 반드시 [getSampleInstance] 메서드를 통해 데이터를 초기화하여 인스턴스를 생성해야 한다.
 class RestaurantProvider {
-  RestaurantProvider._internal(this._foodData, this._defaultFoodKind);
+  RestaurantProvider._internal(this._foodData, this._settingsProvider) {
+    _favoriteFoodNames = _settingsProvider?.getFavoriteFoodList() ?? {};
+  }
 
   /// [Food]으로 작성된 음식점 목록을 [FoodKind]별로 매핑한 데이터.
   final Map<FoodKind, List<Food>>? _foodData;
 
-  final FoodKind? _defaultFoodKind;
+  final SettingsProvider? _settingsProvider;
+
+  late final Set<String> _favoriteFoodNames;
 
   static RestaurantProvider? _instance;
 
-  FoodKind get defaultFoodKind => _defaultFoodKind ?? FoodKind.all;
+  FoodKind get defaultFoodKind =>
+      _settingsProvider?.getDefaultFoodKind() ?? FoodKind.all;
 
   /// [foodKind]에 해당하는 음식점 목록을 [Food] 형으로 반환한다.
   ///
-  /// 만일 모든 음식 종류를 의마하는 [FoodKind.all]이 전달되면 모든 음식점 목록을 하나의 리스트로 반환한다.
+  /// 만일 모든 음식 종류를 의미하는 [FoodKind.all]이 전달되면 모든 음식점 목록을 하나의 리스트로 반환한다.
   List<Food> foods(FoodKind foodKind, {bool showOnlyFavorite = false}) {
     if (foodKind == FoodKind.all) {
       return _foodData?.values
@@ -53,6 +58,12 @@ class RestaurantProvider {
     required Food food,
     required FoodPreference preference,
   }) {
+    if (preference == FoodPreference.like) {
+      _favoriteFoodNames.add(food.foodName);
+    } else {
+      _favoriteFoodNames.remove(food.foodName);
+    }
+
     _foodData?.update(food.foodKind, (oldFoods) {
       List<Food> newFoods = [];
 
@@ -63,6 +74,7 @@ class RestaurantProvider {
           newFoods.add(oldFood);
         }
       }
+      _settingsProvider?.updateFavoriteFoodList(_favoriteFoodNames);
       return newFoods;
     });
   }
@@ -78,54 +90,80 @@ class RestaurantProvider {
       final settingsProvider = !skipInitializeSettingsProvider
           ? await SettingsProvider.getInstance()
           : null;
-      final internalData = {
+      final favoriteFoodNames = settingsProvider?.getFavoriteFoodList() ?? {};
+
+      FoodPreference preferenceOf(String foodName) {
+        return favoriteFoodNames.contains(foodName)
+            ? FoodPreference.like
+            : FoodPreference.neutral;
+      }
+
+      Food food(FoodKind foodKind, String foodName) {
+        return Food(
+          foodName: foodName,
+          foodKind: foodKind,
+          preference: preferenceOf(foodName),
+        );
+      }
+
+      final foodNamesByKind = {
         FoodKind.noodle: [
-          Food(foodName: "고스락 칼국수", foodKind: FoodKind.noodle),
-          Food(foodName: "짬뽕혁명", foodKind: FoodKind.noodle),
-          Food(foodName: "찐짜짬뽕", foodKind: FoodKind.noodle),
-          Food(foodName: "퍼틴", foodKind: FoodKind.noodle),
-          Food(foodName: "오한수우육명가", foodKind: FoodKind.noodle),
-          Food(foodName: "큐슈울트라아멘", foodKind: FoodKind.noodle),
-          Food(foodName: "오백국수", foodKind: FoodKind.noodle),
+          "고스락 칼국수",
+          "짬뽕혁명",
+          "찐짜짬뽕",
+          "퍼틴",
+          "오한수우육명가",
+          "큐슈울트라아멘",
+          "오백국수",
         ],
         FoodKind.rice: [
-          Food(foodName: "진상", foodKind: FoodKind.rice),
-          Food(foodName: "유쾌한 비빔밥", foodKind: FoodKind.rice),
-          Food(foodName: "한솥 도시락", foodKind: FoodKind.rice),
-          Food(foodName: "얌샘김밥", foodKind: FoodKind.rice),
-          Food(foodName: "모모유부", foodKind: FoodKind.rice),
-          Food(foodName: "한창회관", foodKind: FoodKind.rice),
-          Food(foodName: "한끼의 정석 dine", foodKind: FoodKind.rice),
-          Food(foodName: "정담은 한상", foodKind: FoodKind.rice),
-          Food(foodName: "장금이한식뷔페", foodKind: FoodKind.rice),
+          "진상",
+          "유쾌한 비빔밥",
+          "한솥 도시락",
+          "얌샘김밥",
+          "모모유부",
+          "한창회관",
+          "한끼의 정석 dine",
+          "정담은 한상",
+          "장금이한식뷔페",
         ],
         FoodKind.bread: [
-          Food(foodName: "뉴욕 버거", foodKind: FoodKind.bread),
-          Food(foodName: "목동버거", foodKind: FoodKind.bread),
-          Food(foodName: "베이글 트리", foodKind: FoodKind.bread),
+          "뉴욕 버거",
+          "목동버거",
+          "베이글 트리",
         ],
         FoodKind.soup: [
-          Food(foodName: "본설렁탕", foodKind: FoodKind.soup),
-          Food(foodName: "일품양평해장국", foodKind: FoodKind.soup),
-          Food(foodName: "육수당", foodKind: FoodKind.soup),
-          Food(foodName: "맑은곰탕", foodKind: FoodKind.soup),
-          Food(foodName: "명백집", foodKind: FoodKind.soup),
-          Food(foodName: "북촌손만두", foodKind: FoodKind.soup),
+          "본설렁탕",
+          "일품양평해장국",
+          "육수당",
+          "맑은곰탕",
+          "명백집",
+          "북촌손만두",
         ],
         FoodKind.salad: [
-          Food(foodName: "샐러디", foodKind: FoodKind.salad),
-          Food(foodName: "샐러드박스", foodKind: FoodKind.salad),
-          Food(foodName: "포케올데이", foodKind: FoodKind.salad),
-          Food(foodName: "주니아", foodKind: FoodKind.salad),
-          Food(foodName: "죠샌드위치", foodKind: FoodKind.salad),
+          "샐러디",
+          "샐러드박스",
+          "포케올데이",
+          "주니아",
+          "죠샌드위치",
         ],
-        FoodKind.etc: [Food(foodName: "CU", foodKind: FoodKind.etc),
-          Food(foodName: "돈카춘", foodKind: FoodKind.etc),
-          Food(foodName: "꽃찬 찜닭", foodKind: FoodKind.etc)
+        FoodKind.etc: [
+          "CU",
+          "돈카춘",
+          "꽃찬 찜닭",
         ],
       };
+
+      final internalData = foodNamesByKind.map(
+            (foodKind, foodNames) =>
+            MapEntry(
+              foodKind,
+              foodNames.map((foodName) => food(foodKind, foodName)).toList(),
+            ),
+      );
+
       _instance = RestaurantProvider._internal(
-          internalData, settingsProvider?.getDefaultFoodKind());
+          internalData, settingsProvider);
     }
     return RestaurantProvider._instance!;
   }

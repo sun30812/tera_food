@@ -11,6 +11,8 @@ class SettingsProvider {
   // 음식점 종류 설정 관리용 키
   static const String _defaultFoodKindKey = 'default_food_kind';
 
+  static const String _favoriteFoodKey = 'favorite_food_names';
+
   static SettingsProvider? _instance;
   final SharedPreferences _pref;
 
@@ -19,6 +21,16 @@ class SettingsProvider {
   /// [foodKind]은 [FoodKind] 열거형의 값으로 전달되어야 한다.
   void setDefaultFoodKind(FoodKind foodKind) =>
       _pref.setString(_defaultFoodKindKey, foodKind.name);
+
+  /// 즐겨찾는 음식점 목록을 업데이트 한다.
+  ///
+  /// [foodNames]를 통해 전달된 음식점 이름들의 목록을 즐겨찾기 설정 저장소에 저장한다.
+  void updateFavoriteFoodList(Set<String> foodNames) =>
+      _pref.setStringList(_favoriteFoodKey, foodNames.toList());
+
+  /// 즐겨찾는 음식점 목록을 저장소에서 가져와 반환한다.
+  Set<String> getFavoriteFoodList() =>
+      _pref.getStringList(_favoriteFoodKey)?.toSet() ?? {};
 
   /// 앱에서 기본으로 표시할 음식점 종류를 반환한다.
   FoodKind getDefaultFoodKind() => FoodKind.values.byName(
