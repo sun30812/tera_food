@@ -28,6 +28,11 @@ class SettingsProvider {
   void updateFavoriteFoodList(Set<String> foodNames) =>
       _pref.setStringList(_favoriteFoodKey, foodNames.toList());
 
+  /// 줄겨찾는 음식점 목록을 초기화 한다.
+  ///
+  /// 저장소에 등록된 즐겨찾는 음식점 목록에 대한 데이터를 삭제한다.
+  void clearFavoriteFoodList() => _pref.remove(_favoriteFoodKey);
+
   /// 즐겨찾는 음식점 목록을 저장소에서 가져와 반환한다.
   Set<String> getFavoriteFoodList() =>
       _pref.getStringList(_favoriteFoodKey)?.toSet() ?? {};
